@@ -1,18 +1,15 @@
-import { ReactSketchCanvas } from "react-sketch-canvas";
+import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
+import c from "./Canvas.module.css";
+import { RefObject } from "react";
 
-const styles = {
-  border: "0.0625rem solid #9c9c9c",
-  borderRadius: "0.25rem",
+type CanvasProps = {
+  canvasRef?: RefObject<ReactSketchCanvasRef | null>;
 };
 
-export const Canvas = () => {
+export const Canvas = ({ canvasRef }: CanvasProps) => {
   return (
-    <ReactSketchCanvas
-      style={styles}
-      width="600"
-      height="400"
-      strokeWidth={4}
-      strokeColor="red"
-    />
+    <div className={c.canvasContainer}>
+      <ReactSketchCanvas ref={canvasRef} strokeWidth={3} strokeColor="black" />
+    </div>
   );
 };
