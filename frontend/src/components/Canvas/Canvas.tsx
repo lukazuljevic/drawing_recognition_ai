@@ -7,9 +7,16 @@ type CanvasProps = {
 };
 
 export const Canvas = ({ canvasRef }: CanvasProps) => {
+  const handleSubmitClick = () => {
+    canvasRef?.current?.exportImage("png").then((data) => {
+      console.log("Exported Image Data:", data);
+    });
+  };
   return (
     <div className={c.canvasContainer}>
       <ReactSketchCanvas ref={canvasRef} strokeWidth={3} strokeColor="black" />
+
+      <div onClick={handleSubmitClick}>Submit</div>
     </div>
   );
 };
