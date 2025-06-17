@@ -32,14 +32,14 @@ def load_data():
     return images, labels
 
 images, labels = load_data()
+images = np.array(images).astype("float32")
+labels = np.array(labels).astype("float32")
+images = images.reshape(images.shape[0] * images.shape[1], images.shape[2])
+labels = labels.reshape(labels.shape[0] * labels.shape[1], labels.shape[2])
 
+with open("images", "wb") as f:
+    pickle.dump(images, f)
+with open("labels", "wb") as f:
+    pickle.dump(labels, f)
 
-        
-
-
-
-
-
-
-load_data()
 
