@@ -12,8 +12,6 @@ def convert_image_format(imageBase64):
     image = image.resize((28, 28)) 
 
     image_array = np.array(image)
-    image_array = image_array.reshape((1, 28, 28, 1))
-
-    print(f"Converted image to shape {image_array}")
+    image_array = image_array.reshape((-1, 28, 28, 1))
 
     return image_array
