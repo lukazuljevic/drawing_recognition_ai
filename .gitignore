@@ -174,5 +174,5 @@ cython_debug/
 .pypirc
 
 
-model/images
-model/labels
+model/images_128x128
+model/labels_128x128

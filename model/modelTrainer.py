@@ -10,19 +10,19 @@ import tensorflow as tf
 
 def prediction_model():
 
-    num_of_classes = 17
+    num_of_classes = 25
 
     model = Sequential()
-    model.add(Conv2D(32, (5, 5), input_shape=(28, 28,1), activation='relu'))
+    model.add(Conv2D(32, (5, 5), input_shape=(128, 128,1), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
     model.add(Conv2D(64, (5, 5), activation='relu'))
     model.add(MaxPooling2D(pool_size=(2, 2), strides=(2, 2), padding='same'))
 
     model.add(Flatten())
     model.add(Dense(512, activation='relu'))
-    model.add(Dropout(0.6))
+    model.add(Dropout(0.5))
     model.add(Dense(128, activation='relu'))
-    model.add(Dropout(0.6))
+    model.add(Dropout(0.5))
     model.add(Dense(num_of_classes, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
@@ -31,9 +31,9 @@ def prediction_model():
 
 
 def load_data():
-    with open("images", "rb") as f:
+    with open("images_128x128", "rb") as f:
         images = np.array(pickle.load(f))
-    with open("labels", "rb") as f:
+    with open("labels_128x128", "rb") as f:
         labels = np.array(pickle.load(f))
 
     return images, labels
@@ -44,26 +44,19 @@ def hot_encode_labels(labels):
 
 def main():
     images, labels = load_data()
-
     images, labels = shuffle(images, labels)
 
     labels = hot_encode_labels(labels)
 
     train_images, test_images, train_labels, test_labels = train_test_split(images, labels,  test_size=0.15, random_state =0)
 
-    train_images = train_images.reshape(train_images.shape[0], 28, 28, 1)
-    test_images = test_images.reshape(test_images.shape[0], 28, 28, 1)
+    train_images = train_images.reshape(train_images.shape[0], 128, 128, 1)
+    test_images = test_images.reshape(test_images.shape[0], 128, 128, 1)
 
     model = prediction_model()
-
     model.summary()
-
-    model.fit(train_images, train_labels, epochs=10, batch_size=128, validation_data=(test_images, test_labels))
-
-    scores = model.evaluate(test_images, test_labels, verbose=0)
-    print(f"Test loss: {scores[0]}")
-    print(f"Test accuracy: {scores[1]}")
-
+    model.fit(train_images, train_labels, epochs=4, batch_size=64, validation_data=(test_images, test_labels))
+    
     model.save("model.h5")
 
 main()

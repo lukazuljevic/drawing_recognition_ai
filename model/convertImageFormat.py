@@ -9,9 +9,8 @@ def convert_image_format(imageBase64):
     image_bytes = base64.b64decode(image_data)
     image = Image.open(BytesIO(image_bytes)).convert('L') 
 
-    image = image.resize((28, 28)) 
-
-    image_array = np.array(image)
-    image_array = image_array.reshape((-1, 28, 28, 1))
+    image = image.resize((128, 128)) 
+    image_array = np.array(image).astype("float32") / 255.0
+    image_array = image_array.reshape((1, 128, 128, 1))
 
     return image_array
