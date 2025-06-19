@@ -1,16 +1,42 @@
 import { Labels } from "../../constants/labels";
 import c from "./DrawingInfo.module.css";
+import { useContext, useEffect, useState } from "react";
+import { LabelContext } from "../../contexts/LabelContext";
 
-export const DrawingInfo = () => {
-  const randomNumber = Math.floor(Math.random() * 25);
+type DrawingInfoProps = {
+  setShowCanvas: (show: boolean) => void;
+  setShowDrawingInfo: (show: boolean) => void;
+};
+
+export const DrawingInfo = ({
+  setShowCanvas,
+  setShowDrawingInfo,
+}: DrawingInfoProps) => {
+  const [choosenLabel, setChoosenLabel] = useState<string>("");
+
+  useEffect(() => {
+    const randomNumber = Math.floor(Math.random() * 25);
+    setChoosenLabel(Labels[randomNumber]);
+
+    const { updateLabel } = useContext(LabelContext);
+
+    updateLabel(choosenLabel);
+  }, []);
+
+  const handleStartDrawing = () => {
+    setShowCanvas(true);
+    setShowDrawingInfo(false);
+  };
 
   return (
     <div className={c.drawingInfo}>
       <h2>Draw the following:</h2>
-      <h1>{Labels[randomNumber]}</h1>
+      <h1>{choosenLabel}</h1>
       <div className={c.buttonContainer}>
         <p>You have 20 seconds, good luck!</p>
-        <button className={c.startButton}>Start Drawing</button>
+        <button className={c.startButton} onClick={handleStartDrawing}>
+          Start Drawing
+        </button>
       </div>
     </div>
   );

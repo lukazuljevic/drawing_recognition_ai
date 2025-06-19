@@ -1,18 +1,21 @@
-import { Canvas } from "../../components/Canvas";
-import { useRef } from "react";
+import { useState } from "react";
 import c from "./Homepage.module.css";
-import { Header } from "../../components/Header";
-import { ReactSketchCanvasRef } from "react-sketch-canvas";
 import { DrawingInfo } from "../../components/DrawingInfo";
+import { DrawingPage } from "../DrawingPage";
 
 export const Homepage = () => {
-  const canvasRef = useRef<ReactSketchCanvasRef>(null);
+  const [showDrawingInfo, setShowDrawingInfo] = useState<boolean>(true);
+  const [showCanvas, setShowCanvas] = useState<boolean>(false);
 
   return (
     <section className={c.homepage}>
-      {/* <Header canvasRef={canvasRef} /> */}
-      {/* <Canvas canvasRef={canvasRef} /> */}
-      <DrawingInfo />
+      {showCanvas ? <DrawingPage /> : null}
+      {showDrawingInfo ? (
+        <DrawingInfo
+          setShowCanvas={setShowCanvas}
+          setShowDrawingInfo={setShowDrawingInfo}
+        />
+      ) : null}
     </section>
   );
 };

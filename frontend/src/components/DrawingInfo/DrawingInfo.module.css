@@ -9,6 +9,17 @@
   }
 }
 
+@keyframes slideOutToTop {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
 .drawingInfo {
   background-color: rgb(255, 235, 59);
   color: black;
