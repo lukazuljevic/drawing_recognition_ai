@@ -124,8 +124,8 @@ export const Canvas = ({ canvasRef }: CanvasProps) => {
       <ReactSketchCanvas
         ref={canvasRef}
         strokeWidth={3}
-        strokeColor="#FFFFFF"
-        canvasColor="#000000"
+        strokeColor="white"
+        canvasColor="black"
       />
       <div onClick={handleSubmitClick}>Submit</div>
     </div>
