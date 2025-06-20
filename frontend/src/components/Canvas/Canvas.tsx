@@ -1,129 +1,124 @@
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import c from "./Canvas.module.css";
-import { RefObject, useEffect, useState } from "react";
-import { useGetPrediction } from "../../api/drawing/useGetPrediction";
-import CountDown from "react-countdown";
+import { useRef } from "react";
 
 type CanvasProps = {
-  canvasRef?: RefObject<ReactSketchCanvasRef | null>;
+  setImageBase64: (value: string) => void;
 };
 
-const cropImage = (base64: string) => {
-  const img = new Image();
-  img.src = base64;
+const cropImage = (base64: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = base64;
 
-  img.onload = () => {
-    const tempCanvas = document.createElement("canvas");
-    const ctx = tempCanvas.getContext("2d", { willReadFrequently: true });
+    img.onload = () => {
+      const tempCanvas = document.createElement("canvas");
+      const ctx = tempCanvas.getContext("2d", { willReadFrequently: true });
 
-    if (!ctx) {
-      console.error("Failed to get canvas context");
-      return;
-    }
+      if (!ctx) {
+        reject("Failed to get canvas context");
+        return;
+      }
 
-    tempCanvas.width = img.width;
-    tempCanvas.height = img.height;
-    ctx.drawImage(img, 0, 0);
+      tempCanvas.width = img.width;
+      tempCanvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
 
-    const { data, width, height } = ctx.getImageData(
-      0,
-      0,
-      img.width,
-      img.height
-    );
+      const { data, width, height } = ctx.getImageData(
+        0,
+        0,
+        img.width,
+        img.height
+      );
 
-    let top = height,
-      bottom = 0,
-      left = width,
-      right = 0;
+      let top = height,
+        bottom = 0,
+        left = width,
+        right = 0;
 
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const i = (y * width + x) * 4;
-        const r = data[i],
-          g = data[i + 1],
-          b = data[i + 2],
-          a = data[i + 3];
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const i = (y * width + x) * 4;
+          const [r, g, b, a] = [data[i], data[i + 1], data[i + 2], data[i + 3]];
 
-        const isDrawn = a > 0 && (r > 0 || g > 0 || b > 0);
-        if (isDrawn) {
-          if (x < left) left = x;
-          if (x > right) right = x;
-          if (y < top) top = y;
-          if (y > bottom) bottom = y;
+          if (a > 0 && (r > 0 || g > 0 || b > 0)) {
+            if (x < left) left = x;
+            if (x > right) right = x;
+            if (y < top) top = y;
+            if (y > bottom) bottom = y;
+          }
         }
       }
-    }
 
-    const cropWidth = right - left + 1;
-    const cropHeight = bottom - top + 1;
+      const cropWidth = right - left + 1;
+      const cropHeight = bottom - top + 1;
 
-    const finalCanvas = document.createElement("canvas");
-    finalCanvas.width = cropWidth;
-    finalCanvas.height = cropHeight;
-    const finalCtx = finalCanvas.getContext("2d", {
-      willReadFrequently: true,
-    });
+      const finalCanvas = document.createElement("canvas");
+      finalCanvas.width = cropWidth;
+      finalCanvas.height = cropHeight;
+      const finalCtx = finalCanvas.getContext("2d", {
+        willReadFrequently: true,
+      });
 
-    if (!finalCtx) {
-      console.error("Failed to get canvas context");
-      return;
-    }
+      if (!finalCtx) {
+        reject("Failed to get final canvas context");
+        return;
+      }
 
-    finalCtx.fillStyle = "#000000";
-    finalCtx.fillRect(0, 0, cropWidth, cropHeight);
+      finalCtx.fillStyle = "#000000";
+      finalCtx.fillRect(0, 0, cropWidth, cropHeight);
 
-    const croppedImageData = ctx.getImageData(left, top, cropWidth, cropHeight);
-    const croppedPixels = croppedImageData.data;
+      const croppedImageData = ctx.getImageData(
+        left,
+        top,
+        cropWidth,
+        cropHeight
+      );
+      const croppedPixels = croppedImageData.data;
+      const finalImageData = finalCtx.getImageData(0, 0, cropWidth, cropHeight);
+      const finalPixels = finalImageData.data;
 
-    const finalImageData = finalCtx.getImageData(0, 0, cropWidth, cropHeight);
-    const finalPixels = finalImageData.data;
+      for (let y = 0; y < cropHeight; y++) {
+        for (let x = 0; x < cropWidth; x++) {
+          const idx = (y * cropWidth + x) * 4;
+          const [r, g, b, a] = [
+            croppedPixels[idx],
+            croppedPixels[idx + 1],
+            croppedPixels[idx + 2],
+            croppedPixels[idx + 3],
+          ];
 
-    for (let y = 0; y < cropHeight; y++) {
-      for (let x = 0; x < cropWidth; x++) {
-        const croppedIndex = (y * cropWidth + x) * 4;
-        const r = croppedPixels[croppedIndex];
-        const g = croppedPixels[croppedIndex + 1];
-        const b = croppedPixels[croppedIndex + 2];
-        const a = croppedPixels[croppedIndex + 3];
+          const finalIdx = idx;
 
-        const finalX = x + 1;
-        const finalY = y + 1;
-        const finalIndex = (finalY * cropWidth + finalX) * 4;
-
-        if (a > 0 && (r > 0 || g > 0 || b > 0)) {
-          finalPixels[finalIndex] = 255;
-          finalPixels[finalIndex + 1] = 255;
-          finalPixels[finalIndex + 2] = 255;
-          finalPixels[finalIndex + 3] = 255;
-        } else {
-          finalPixels[finalIndex] = 0;
-          finalPixels[finalIndex + 1] = 0;
-          finalPixels[finalIndex + 2] = 0;
-          finalPixels[finalIndex + 3] = 255;
+          if (a > 0 && (r > 0 || g > 0 || b > 0)) {
+            finalPixels[finalIdx] = 255;
+            finalPixels[finalIdx + 1] = 255;
+            finalPixels[finalIdx + 2] = 255;
+            finalPixels[finalIdx + 3] = 255;
+          } else {
+            finalPixels[finalIdx] = 0;
+            finalPixels[finalIdx + 1] = 0;
+            finalPixels[finalIdx + 2] = 0;
+            finalPixels[finalIdx + 3] = 255;
+          }
         }
       }
-    }
 
-    finalCtx.putImageData(finalImageData, 0, 0);
-
-    const finalCroppedImg = new Image();
-    finalCroppedImg.src = finalCanvas.toDataURL("image/png");
-
-    console.log("Final Cropped image data:", finalCroppedImg.src);
-  };
+      finalCtx.putImageData(finalImageData, 0, 0);
+      resolve(finalCanvas.toDataURL("image/png"));
+    };
+  });
 };
 
-export const Canvas = ({ canvasRef }: CanvasProps) => {
-  const [previousLabel, setPreviousLabel] = useState<string>("");
-  const [imageBase64, setImageBase64] = useState<string>("");
+export const Canvas = ({ setImageBase64 }: CanvasProps) => {
+  const canvasRef = useRef<ReactSketchCanvasRef | null>(null);
 
-  // const getPrediction = useGetPrediction({ imageBase64, previousLabel });
+  const handleChange = async () => {
+    const base64 = await canvasRef.current?.exportImage("png");
+    if (!base64) return;
 
-  const handleSubmitClick = () => {
-    canvasRef?.current?.exportImage("png").then((base64) => {
-      cropImage(base64);
-    });
+    const croppedBase64 = await cropImage(base64);
+    setImageBase64(croppedBase64);
   };
 
   return (
@@ -133,12 +128,7 @@ export const Canvas = ({ canvasRef }: CanvasProps) => {
         strokeWidth={3}
         strokeColor="white"
         canvasColor="black"
-      />
-      <div onClick={handleSubmitClick}>Submit</div>
-      <CountDown
-        date={Date.now() + 20000}
-        renderer={({ seconds }) => <div className={c.countdown}>{seconds}</div>}
-        onComplete={() => console.log("Countdown completed")}
+        onChange={handleChange}
       />
     </div>
   );

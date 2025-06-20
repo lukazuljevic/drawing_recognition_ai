@@ -1,14 +1,16 @@
 import { Canvas } from "../../components/Canvas";
-import { ReactSketchCanvasRef } from "react-sketch-canvas";
-import { useRef } from "react";
+import { useState } from "react";
 import c from "./DrawingPage.module.css";
+import { CountDownTimer } from "../../components/Countdown";
 
 export const DrawingPage = () => {
-  const canvasRef = useRef<ReactSketchCanvasRef>(null);
+  const [previousLabel, setPreviousLabel] = useState<string>("");
+  const [imageBase64, setImageBase64] = useState<string>("");
 
   return (
     <section className={c.drawingPage}>
-      <Canvas canvasRef={canvasRef} />
+      <CountDownTimer />
+      <Canvas setImageBase64={setImageBase64} />
     </section>
   );
 };
