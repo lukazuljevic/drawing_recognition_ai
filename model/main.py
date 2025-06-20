@@ -5,8 +5,17 @@ from convertImageFormat import convert_image_format
 import numpy as np
 import tensorflow as tf
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 model = tf.keras.models.load_model('model.h5')
 
@@ -26,8 +35,9 @@ def predict_from_base64(base64_img):
 
     return top_labels  
 
-@app.post("/predict")
+@app.post("/prediction")
 async def predict(base64_img: str, previous_label: str = None):
+    print("Received base64 image for prediction.")
     top_predictions = predict_from_base64(base64_img)
     first_label, first_confidance = top_predictions[0]
     second_label, second_confidance = top_predictions[1]

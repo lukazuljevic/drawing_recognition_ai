@@ -1,4 +1,4 @@
-import { useQuery } from "react-query";
+import { useMutation } from "react-query";
 import { api } from "../base";
 import { PREDICTION_PATH } from "../../constants/paths";
 
@@ -12,24 +12,19 @@ type GetPredictionResponse = {
   confidence: number;
 };
 
-const getPrediction = async () => {
-  const response = await api.post<GetPredictionParams, GetPredictionResponse>(
-    PREDICTION_PATH
-  );
-
-  return response;
-};
-
-export const useGetPrediction = ({
+const getPrediction = async ({
   imageBase64,
   previousLabel,
 }: GetPredictionParams) => {
-    
-  return useQuery({
-    queryKey: ["prediction", imageBase64, previousLabel],
-    queryFn: getPrediction,
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    retry: false,
+  const response = await api.post<GetPredictionParams, GetPredictionResponse>(
+    PREDICTION_PATH,
+    { imageBase64, previousLabel }
+  );
+  return response;
+};
+
+export const useGetPrediction = () => {
+  return useMutation({
+    mutationFn: getPrediction,
   });
 };
