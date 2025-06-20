@@ -12,15 +12,14 @@ export const DrawingInfo = ({
   setShowCanvas,
   setShowDrawingInfo,
 }: DrawingInfoProps) => {
-  const [choosenLabel, setChoosenLabel] = useState<string>("");
+  const { updateLabel, label } = useContext(LabelContext);
+  const [choosenLabel, setChosenLabel] = useState<string>("");
 
   useEffect(() => {
     const randomNumber = Math.floor(Math.random() * 25);
-    setChoosenLabel(Labels[randomNumber]);
 
-    const { updateLabel } = useContext(LabelContext);
-
-    updateLabel(choosenLabel);
+    setChosenLabel(Labels[randomNumber]);
+    updateLabel(Labels[randomNumber]);
   }, []);
 
   const handleStartDrawing = () => {

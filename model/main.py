@@ -1,19 +1,45 @@
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 from convertImageFormat import convert_image_format
 import numpy as np
 import tensorflow as tf
+from fastapi import FastAPI
 
-
+app = FastAPI()
 
 model = tf.keras.models.load_model('model.h5')
 
+labels = [
+    "airplane", "anvil", "banana", "car", "carrot", "donut", "door", "drill",
+    "fork", "house", "lollipop", "microwave", "moon", "mushroom", "pants",
+    "pencil", "pineapple", "radio", "shovel", "smiley face", "sun", "toe",
+    "traffic light", "t-shirt", "wine glass"
+]
+
 def predict_from_base64(base64_img):
-    img_array = convert_image_format(base64_img)
-    prediction = model.predict(img_array) 
-    predicted_class = np.argmax(prediction, axis=1)[0]
-    confidence = prediction[0][predicted_class]
-    print(f"Predicted class: {prediction}, Confidence: {confidence}")
+    image = convert_image_format(base64_img)
+    prediction = model.predict(image)[0] 
 
+    top_indices = prediction.argsort()[-2:][::-1]
+    top_labels = [(labels[i], prediction[i]) for i in top_indices]
 
-predict_from_base64("data:image/png;base64,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")
+    return top_labels  
 
+@app.post("/predict")
+async def predict(base64_img: str, previous_label: str = None):
+    top_predictions = predict_from_base64(base64_img)
+    first_label, first_confidance = top_predictions[0]
+    second_label, second_confidance = top_predictions[1]
 
+    if previous_label == first_label:
+        predicted_label = second_label
+        confidence = second_confidance
+    else:
+        predicted_label = first_label
+        confidence = first_confidance
+
+    return {
+        "prediction": predicted_label,
+        "confidence": round(float(confidence), 2),
+    }

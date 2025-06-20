@@ -1,6 +1,8 @@
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import c from "./Canvas.module.css";
-import { RefObject } from "react";
+import { RefObject, useEffect, useState } from "react";
+import { useGetPrediction } from "../../api/drawing/useGetPrediction";
+import CountDown from "react-countdown";
 
 type CanvasProps = {
   canvasRef?: RefObject<ReactSketchCanvasRef | null>;
@@ -113,6 +115,11 @@ const cropImage = (base64: string) => {
 };
 
 export const Canvas = ({ canvasRef }: CanvasProps) => {
+  const [previousLabel, setPreviousLabel] = useState<string>("");
+  const [imageBase64, setImageBase64] = useState<string>("");
+
+  // const getPrediction = useGetPrediction({ imageBase64, previousLabel });
+
   const handleSubmitClick = () => {
     canvasRef?.current?.exportImage("png").then((base64) => {
       cropImage(base64);
@@ -128,6 +135,11 @@ export const Canvas = ({ canvasRef }: CanvasProps) => {
         canvasColor="black"
       />
       <div onClick={handleSubmitClick}>Submit</div>
+      <CountDown
+        date={Date.now() + 20000}
+        renderer={({ seconds }) => <div className={c.countdown}>{seconds}</div>}
+        onComplete={() => console.log("Countdown completed")}
+      />
     </div>
   );
 };
