@@ -14,17 +14,19 @@ export const DrawingPage = () => {
   const [isPredicting, setIsPredicting] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [predictionConfidance, setPredictionConfidance] = useState<number>(0);
+
   const countdownStartTimeRef = useRef(Date.now() + 20000);
+  const intervalRef = useRef<number>(0);
 
   const { mutate: getPrediction } = useGetPrediction();
   const { label } = useContext(LabelContext);
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
+    intervalRef.current = setInterval(() => {
       setIsPredicting(true);
     }, 4000);
 
-    return () => clearInterval(intervalId);
+    return () => clearInterval(intervalRef.current);
   }, []);
 
   useEffect(() => {
@@ -59,6 +61,7 @@ export const DrawingPage = () => {
       const timeoutId = setTimeout(() => {
         setIsCorrect(true);
         setIsTimeFinished(true);
+        clearInterval(intervalRef.current);
       }, 1000);
 
       return () => clearTimeout(timeoutId);
