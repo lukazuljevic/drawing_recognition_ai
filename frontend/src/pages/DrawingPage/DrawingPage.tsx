@@ -56,22 +56,19 @@ export const DrawingPage = () => {
 
   const checkIfCorrectPrediction = (prediction: string) => {
     if (prediction === label) {
-      setIsCorrect(true);
-      setIsTimeFinished(true);
+      const timeoutId = setTimeout(() => {
+        setIsCorrect(true);
+        setIsTimeFinished(true);
+      }, 1000);
+
+      return () => clearTimeout(timeoutId);
     }
-  };
-
-  useEffect(() => {
-    if (isTimeFinished) displayFinalResult(isCorrect);
-  }, [isTimeFinished]);
-
-  const displayFinalResult = (isCorrect: boolean) => {
-    return <FinalResult isCorrect={isCorrect} />;
   };
 
   return (
     <section className={c.drawingPage}>
       <CountDownTimer
+        isTimeFinished={isTimeFinished}
         setIsTimeFinished={setIsTimeFinished}
         initialDate={countdownStartTimeRef.current}
       />
@@ -80,6 +77,7 @@ export const DrawingPage = () => {
         prediction={previousLabel}
         predictionConfidance={predictionConfidance}
       />
+      {isTimeFinished && <FinalResult isCorrect={isCorrect} />}
     </section>
   );
 };
