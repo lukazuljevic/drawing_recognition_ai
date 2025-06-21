@@ -6,6 +6,8 @@ import numpy as np
 import tensorflow as tf
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from typing import Optional
 
 app = FastAPI()
 
@@ -26,6 +28,10 @@ labels = [
     "traffic light", "t-shirt", "wine glass"
 ]
 
+class PredictionRequest(BaseModel):
+    imageBase64: str
+    previousLabel: Optional[str] = None
+
 def predict_from_base64(base64_img):
     image = convert_image_format(base64_img)
     prediction = model.predict(image)[0] 
@@ -36,13 +42,12 @@ def predict_from_base64(base64_img):
     return top_labels  
 
 @app.post("/prediction")
-async def predict(base64_img: str, previous_label: str = None):
-    print("Received base64 image for prediction.")
-    top_predictions = predict_from_base64(base64_img)
+async def predict(request: PredictionRequest):
+    top_predictions = predict_from_base64(request.imageBase64)
     first_label, first_confidance = top_predictions[0]
     second_label, second_confidance = top_predictions[1]
 
-    if previous_label == first_label:
+    if request.previousLabel == first_label:
         predicted_label = second_label
         confidence = second_confidance
     else:
