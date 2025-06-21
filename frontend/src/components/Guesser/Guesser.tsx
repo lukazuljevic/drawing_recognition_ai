@@ -8,7 +8,13 @@ type GuesserProps = {
 export const Guesser = ({ prediction, predictionConfidance }: GuesserProps) => {
   return (
     <div className={c.bubble}>
-      I see <span className={c.bold}>canoe</span>
+      {predictionConfidance > 0.3 ? (
+        <>
+          I see <span className={c.bold}>{prediction}</span>
+        </>
+      ) : (
+        <span>...</span>
+      )}
     </div>
   );
 };

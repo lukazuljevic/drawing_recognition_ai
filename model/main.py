@@ -34,25 +34,17 @@ class PredictionRequest(BaseModel):
 
 def predict_from_base64(base64_img):
     image = convert_image_format(base64_img)
-    prediction = model.predict(image)[0] 
+    prediction = model.predict(image)[0]
 
-    top_indices = prediction.argsort()[-2:][::-1]
-    top_labels = [(labels[i], prediction[i]) for i in top_indices]
+    top_index = prediction.argmax()
+    top_label = labels[top_index]
+    confidence = prediction[top_index]
 
-    return top_labels  
+    return top_label, confidence
 
 @app.post("/prediction")
 async def predict(request: PredictionRequest):
-    top_predictions = predict_from_base64(request.imageBase64)
-    first_label, first_confidance = top_predictions[0]
-    second_label, second_confidance = top_predictions[1]
-
-    if request.previousLabel == first_label:
-        predicted_label = second_label
-        confidence = second_confidance
-    else:
-        predicted_label = first_label
-        confidence = first_confidance
+    predicted_label, confidence = predict_from_base64(request.imageBase64)
 
     return {
         "prediction": predicted_label,

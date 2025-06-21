@@ -18,8 +18,7 @@ export const DrawingPage = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setIsPredicting(true);
-      callGetPrediction();
-    }, 3000);
+    }, 4000);
 
     return () => clearInterval(intervalId);
   }, []);
@@ -27,6 +26,7 @@ export const DrawingPage = () => {
   useEffect(() => {
     callGetPrediction();
   }, [isPredicting]);
+
 
   const callGetPrediction = () => {
     if (imageBase64) {
@@ -38,7 +38,7 @@ export const DrawingPage = () => {
         {
           onSuccess: (data) => {
             setPreviousLabel(data.prediction);
-
+            setPredictionConfidance(data.confidence);
             setIsPredicting(false);
           },
           onError: (error) => {
