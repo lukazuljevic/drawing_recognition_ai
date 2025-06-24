@@ -55,8 +55,9 @@ jobs:
             - "9f:b1:e5:7f:a9:d5:fe:72:60:33:7a:0e:4c:14:23:87"
       - run:
           name: Add host to known_hosts
-          command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
-
+          command: |
+            mkdir -p ~/.ssh
+            ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
       - run:
           name: SSH into remote server and deploy to server
           command: |
