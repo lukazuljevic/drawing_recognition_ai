@@ -26,7 +26,7 @@ jobs:
       - run:
           name: Login to gihub container registry
           command: |
-            docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
+            echo $GITHUB_TOKEN | docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
 
       - run:
           name: Build and push frontend image
