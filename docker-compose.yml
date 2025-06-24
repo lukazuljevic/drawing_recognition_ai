@@ -2,17 +2,13 @@ version: "3.8"
 
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:deployment
     ports:
       - "3000:3000"
     depends_on:
       - model
 
   model:
-    build:
-      context: ./model
-      dockerfile: Dockerfile
+    image: ghcr.io/LukaZuljevic/drawing_recognition_ai_model:deployment
     ports:
       - "8000:8000" 
