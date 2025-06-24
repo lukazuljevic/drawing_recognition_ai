@@ -1,8 +1,7 @@
 import axios from "axios";
-import { BASE_MODEL_PATH } from "../constants/paths";
 
 export const api = axios.create({
-  baseURL: BASE_MODEL_PATH,
+  baseURL: "/api",
   headers: {
     "Content-Type": "application/json",
   },

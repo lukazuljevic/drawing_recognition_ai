@@ -4,12 +4,13 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 from convertImageFormat import convert_image_format
 import numpy as np
 import tensorflow as tf
-from fastapi import FastAPI
+from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 
 app = FastAPI()
+api_router = APIRouter(prefix="/api")
 
 app.add_middleware(
     CORSMiddleware,
@@ -42,7 +43,7 @@ def predict_from_base64(base64_img):
 
     return top_label, confidence
 
-@app.post("/prediction")
+@api_router.post("/prediction")
 async def predict(request: PredictionRequest):
     predicted_label, confidence = predict_from_base64(request.imageBase64)
 
@@ -50,3 +51,6 @@ async def predict(request: PredictionRequest):
         "prediction": predicted_label,
         "confidence": round(float(confidence), 2),
     }
+
+app.include_router(api_router)
+
