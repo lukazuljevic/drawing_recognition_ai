@@ -26,13 +26,13 @@ jobs:
       - run:
           name: Build and push frontend image
           command: |
-            docker build -t ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:${CIRCLE_SHA1} -t ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:deployment ./frontend
-            docker push ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:${CIRCLE_SHA1}
-            docker push ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:deployment
+            docker build -t ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:${CIRCLE_SHA1} -t ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:deployment ./frontend
+            docker push ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:${CIRCLE_SHA1}
+            docker push ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:deployment
 
       - run:
           name: Build and push model image
           command: |
-            docker build -t ghcr.io/LukaZuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1} -t ghcr.io/LukaZuljevic/drawing_recognition_ai_model:deployment ./model
-            docker push ghcr.io/LukaZuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1}
-            docker push ghcr.io/LukaZuljevic/drawing_recognition_ai_model:deployment
+            docker build -t ghcr.io/lukazuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1} -t ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment ./model
+            docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1}
+            docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
