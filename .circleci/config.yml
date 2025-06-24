@@ -8,10 +8,17 @@ workflows:
             branches:
               only: deployment
 
+      - deploy:
+          requires:
+            - build_docker_images
+          filters:
+            branches:
+              only: deployment
+
 jobs:
   build_docker_images:
     docker:
-      - image: cimg/node:20.19.2
+      image: cimg/base:stable
     steps:
       - checkout
 
@@ -36,3 +43,32 @@ jobs:
             docker build -t ghcr.io/lukazuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1} -t ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment ./model
             docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1}
             docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
+
+  deploy:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+
+      - add_ssh_keys:
+          fingerprints:
+            - "9f:b1:e5:7f:a9:d5:fe:72:60:33:7a:0e:4c:14:23:87"
+      - run:
+          name: Add host to known_hosts
+          command: ssh-keyscan $SSH_HOST >> ~/.ssh/known_hosts
+
+      - run:
+          name: SSH into remote server and deploy to server
+          command: |
+            ssh $SSH_USER@$SSH_HOST << 'EOF'
+              cd ~/app
+              
+              echo $GITHUB_TOKEN | sudo docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
+              
+              sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:deployment
+              sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
+              
+              sudo docker-compose down || true
+              sudo docker-compose up -d
+              sudo docker image prune -f
+            EOF

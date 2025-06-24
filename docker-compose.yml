@@ -3,12 +3,17 @@ version: "3.8"
 services:
   frontend:
     image: ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:deployment
+    container_name: frontend
     ports:
       - "3000:3000"
     depends_on:
       - model
-
+    restart: always
+ 
   model:
     image: ghcr.io/LukaZuljevic/drawing_recognition_ai_model:deployment
+    container_name: model
     ports:
-      - "8000:8000" 
+      - "8000:8000"
+    restart: always
+
