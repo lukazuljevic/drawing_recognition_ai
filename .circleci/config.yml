@@ -3,28 +3,23 @@ version: 2.1
 workflows:
   deploy:
     jobs:
-      -docker_image_build:
-        filters:
-          branches:
-            only: deployment
-      # -deploy:
-      #   requires: -docker_image_build
-      #   filters:
-      #     branches:
-      #       only: deployment
+      - build_docker_images:
+          filters:
+            branches:
+              only: deployment
 
 jobs:
-  build:
+  build_docker_images:
     docker:
-      -image: cimg/node:20-slim
+      - image: cimg/node:20-slim
     steps:
       - checkout
 
       - setup_remote_docker:
-        docker_layer_caching: true
+          docker_layer_caching: true
 
       - run:
-          name: Login to gihub container registry
+          name: Login to github container registry
           command: |
             echo $GITHUB_TOKEN | docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
 
