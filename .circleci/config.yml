@@ -1,0 +1,43 @@
+version: 2.1
+
+workflows:
+  deploy:
+    jobs:
+      -docker_image_build:
+        filters:
+          branches:
+            only: deployment
+      # -deploy:
+      #   requires: -docker_image_build
+      #   filters:
+      #     branches:
+      #       only: deployment
+
+jobs:
+  build:
+    docker:
+      -image: cimg/node:20-slim
+    steps:
+      - checkout
+
+      - setup_remote_docker:
+        docker_layer_caching: true
+
+      - run:
+          name: Login to gihub container registry
+          command: |
+            docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
+
+      - run:
+          name: Build and push frontend image
+          command: |
+            docker build -t ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:${CIRCLE_SHA1} -t ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:deployment ./frontend
+            docker push ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:${CIRCLE_SHA1}
+            docker push ghcr.io/LukaZuljevic/drawing_recognition_ai_frontend:deployment
+
+      - run:
+          name: Build and push model image
+          command: |
+            docker build -t ghcr.io/LukaZuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1} -t ghcr.io/LukaZuljevic/drawing_recognition_ai_model:deployment ./model
+            docker push ghcr.io/LukaZuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1}
+            docker push ghcr.io/LukaZuljevic/drawing_recognition_ai_model:deployment
