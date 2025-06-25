@@ -1,0 +1,16 @@
+{
+  "name": "drawing_recognition_ai",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "model"
+  ],
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build"
+  },
+  "devDependencies": {
+    "turbo": "^1.13.0"
+  },
+  "packageManager": "yarn@1.22.22"
+}
