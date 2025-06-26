@@ -26,16 +26,19 @@ jobs:
           docker_layer_caching: true
 
       - run:
+          name: Install dependecies
+          command: |
+            yarn install --immutable
+
+      - run:
+          name: Build frontend
+          command: |
+            yarn build --filter=frontend
+
+      - run:
           name: Login to github container registry
           command: |
             echo $GITHUB_TOKEN | docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
-
-      - run:
-          name: Build and push frontend image
-          command: |
-            docker build -t ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:${CIRCLE_SHA1} -t ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:deployment ./frontend
-            docker push ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:${CIRCLE_SHA1}
-            docker push ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:deployment
 
       - run:
           name: Build and push model image
@@ -65,11 +68,8 @@ jobs:
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
               echo $GITHUB_TOKEN | docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
 
-              sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_frontend:deployment
               sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
-
-              sudo docker-compose down || true
-              sudo docker-compose up -d
-
-              sudo docker image prune -f
+              sudo docker stop drawing_recognition_ai || true
+              sudo docker rm drawing_recognition_ai || true
+              sudo docker run -d --name drawing_recognition_ai -p 8000:8000 ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
             EOF
