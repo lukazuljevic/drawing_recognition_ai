@@ -28,12 +28,14 @@
   font-size: 3rem;
   margin-bottom: 1rem;
   font-style: italic;
+  text-align: center;
 }
 
 .drawingInfo h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
   font-weight: normal;
+  text-align: center;
 }
 
 .buttonContainer {

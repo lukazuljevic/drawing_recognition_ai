@@ -18,7 +18,7 @@ workflows:
 jobs:
   build_docker_images:
     docker:
-      - image: cimg/node:18.17.1
+      - image: cimg/node:20.9.0
     steps:
       - checkout
 
@@ -43,7 +43,7 @@ jobs:
       - run:
           name: Build and push model image
           command: |
-            docker build -t ghcr.io/lukazuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1} -t ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment ./model
+            docker build -f model/Dockerfile -t ghcr.io/lukazuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1} -t ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment .
             docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1}
             docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
 
@@ -58,18 +58,15 @@ jobs:
             - "9f:b1:e5:7f:a9:d5:fe:72:60:33:7a:0e:4c:14:23:87"
 
       - run:
-          name: Copy docker-compose.yml to remote server
-          command: |
-            scp -o StrictHostKeyChecking=no docker-compose.yml $SSH_USER@$SSH_HOST:/home/$SSH_USER/docker-compose.yml
-
-      - run:
           name: SSH into remote server and deploy to server
           command: |
             ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
-              echo $GITHUB_TOKEN | docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
+              echo $GITHUB_TOKEN | sudo docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
 
               sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
               sudo docker stop drawing_recognition_ai || true
               sudo docker rm drawing_recognition_ai || true
               sudo docker run -d --name drawing_recognition_ai -p 8000:8000 ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
-            EOF
+              sudo rm -rf /var/www/html/frontend/*
+              sudo docker cp drawing_recognition_ai:/app/frontend/dist/. /var/www/html/frontend/    
+              EOF

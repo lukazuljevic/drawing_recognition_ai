@@ -1,0 +1,6 @@
+node_modules
+.turbo
+model/images_128x128
+model/labels_128x128
+model/__pycache__
+venv/
