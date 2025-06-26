@@ -18,7 +18,7 @@ workflows:
 jobs:
   build_docker_images:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/node:18.17.1
     steps:
       - checkout
 
