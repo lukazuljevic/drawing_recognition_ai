@@ -1,6 +1,9 @@
 import { ReactSketchCanvas, ReactSketchCanvasRef } from "react-sketch-canvas";
 import c from "./Canvas.module.css";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import trashButton from "../../assets/trash.svg";
+import penButton from "../../assets/pen.svg";
+import eraserButton from "../../assets/eraser.svg";
 
 type CanvasProps = {
   setImageBase64: (value: string) => void;
@@ -112,6 +115,16 @@ const cropImage = (base64: string): Promise<string> => {
 
 export const Canvas = ({ setImageBase64 }: CanvasProps) => {
   const canvasRef = useRef<ReactSketchCanvasRef | null>(null);
+  const [eraseMode, setEraseMode] = useState<boolean>(false);
+
+  const handleEraseMode = () => {
+    canvasRef.current?.eraseMode(!eraseMode);
+    setEraseMode(!eraseMode);
+  };
+
+  const handleClear = () => {
+    canvasRef.current?.clearCanvas();
+  };
 
   const handleChange = async () => {
     const base64 = await canvasRef.current?.exportImage("png");
@@ -123,6 +136,14 @@ export const Canvas = ({ setImageBase64 }: CanvasProps) => {
 
   return (
     <div className={c.canvasContainer}>
+      <div className={c.canvasButtons}>
+        <div onClick={handleEraseMode} className={c.canvasButtonWrapper}>
+          <img src={eraseMode ? penButton : eraserButton} alt="eraser toggle" />
+        </div>
+        <div onClick={handleClear} className={c.canvasButtonWrapper}>
+          <img src={trashButton} alt="clear button" />
+        </div>
+      </div>
       <ReactSketchCanvas
         ref={canvasRef}
         strokeWidth={3}
