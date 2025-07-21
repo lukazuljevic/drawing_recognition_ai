@@ -1,5 +1,6 @@
 plugin: aws_ec2
 profile: lukaZuljevic
+
 regions:
   - eu-central-1
 

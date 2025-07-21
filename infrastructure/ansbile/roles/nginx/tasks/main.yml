@@ -1,0 +1,16 @@
+---
+- name: Install nginx
+  apt: 
+    name: nginx
+    state: present
+    update_cache: yes
+
+- name: Configure nginx
+  copy:
+    src: ../files/nginx.conf
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    group: root
+    mode: '0644' # Owner (root): rw- → read & write | Group: r-- → read only | Others: r-- → read only
+  notify: Restart nginx
+
