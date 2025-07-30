@@ -14,7 +14,7 @@ COPY --from=builder /app/out/full/model/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8000
-RUN apt-get install -y curl
+RUN apt-get update && apt-get install -y curl
 
 COPY --from=builder /app/out/full/ .  
 COPY turbo.json turbo.json
