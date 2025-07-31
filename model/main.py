@@ -52,7 +52,7 @@ async def predict(request: PredictionRequest):
         "confidence": round(float(confidence), 2),
     }
 
-@api_router.get("/health")
+@api_router.get("/health", status_code=200)
 async def health_check():
     return {"status": "ok"}
 
