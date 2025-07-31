@@ -66,7 +66,8 @@ jobs:
               sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
               sudo docker stop drawing_recognition_ai || true
               sudo docker rm drawing_recognition_ai || true
+              sudo docker image prune -a -f 
               sudo docker run -d --name drawing_recognition_ai -p 8000:8000 ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
               sudo rm -rf /var/www/html/frontend/*
-              sudo docker cp drawing_recognition_ai:/app/frontend/dist/. /var/www/html/frontend/    
+              sudo docker cp drawing_recognition_ai:/app/frontend/dist/. /var/www/html/frontend/   
             EOF
