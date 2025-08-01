@@ -1,0 +1,2 @@
+---
+docker_image: ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
