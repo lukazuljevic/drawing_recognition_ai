@@ -2,7 +2,6 @@ collections:
   - name: community.docker
     version: 3.13.3
 
-
 roles:
   - name: geerlingguy.docker
     version: 7.4.7
