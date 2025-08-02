@@ -59,23 +59,8 @@ jobs:
       - checkout
 
       - run:
-          name: Show working directory
-          command: pwd
-
-      - run:
-          name: check if requirements.txt exists
-          command: |
-            ls ./infrastructure/ansible/ || echo "requirements.txt not found"
-
-      - run:
-          name: cd
-          command: |
-            cd ./infrastructure/ansible/
-
-      - run:
-          name: List files
-          command: |
-            ls -al
+          name: List files in working directory
+          command: ls -R
 
       - run:
           name: Install Ansible and dependencies
