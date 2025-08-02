@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  aws-cli: circleci/aws-cli@4.0.0
-
 workflows:
   deploy:
     jobs:
@@ -65,10 +62,12 @@ jobs:
             pip install -r ./infrastructure/ansible/requirements.txt
             ansible-galaxy install -r ./infrastructure/ansible/requirements.yml
 
-      - aws-cli/setup:
-          aws-access-key-id: $aws_access_key_id
-          aws-secret-access-key: $aws_secret_access_key
-          region: eu-central-1
+      - run:
+          name: Login to aws
+          command: |
+            aws configure set aws_access_key_id $aws_access_key_id --profile root
+            aws configure set aws_secret_access_key $aws_secret_access_key --profile root
+
       - run:
           name: Run Ansible playbook
           command: |
