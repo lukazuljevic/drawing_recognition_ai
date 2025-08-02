@@ -11,7 +11,7 @@ workflows:
             branches:
               only: deployment
 
-      - deploy:
+      - ansible_playbook:
           requires:
             - build_docker_images
           filters:
@@ -62,7 +62,7 @@ jobs:
             python3 -m pip install --upgrade pip
             pip install -r ./infrastructure/ansible/requirements.txt
             ansible-galaxy install -r ./infrastructure/ansible/requirements.yml
-        
+
       - aws-cli/setup:
           profile: root
           region: eu-central-1
@@ -73,7 +73,7 @@ jobs:
           name: Run Ansible playbook
           command: |
             ansible-playbook -i ./infrastructure/ansible/inventories/production.aws_ec2.yml \
-            ./infrastructure/ansible/playbooks/playbook.yml        
+            ./infrastructure/ansible/playbooks/playbook.yml
 
   # deploy:
   #   docker:
@@ -98,5 +98,3 @@ jobs:
   #             sudo rm -rf /var/www/html/frontend/*
   #             sudo docker cp drawing_recognition_ai:/app/frontend/dist/. /var/www/html/frontend/
   #           EOF
- 
-  
