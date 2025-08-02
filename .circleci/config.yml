@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@4.0.0
+
 workflows:
   deploy:
     jobs:
@@ -47,26 +50,56 @@ jobs:
             docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1}
             docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
 
-  deploy:
+  ansible_playbook:
     docker:
-      - image: cimg/base:stable
+      - image: cimg/python:3.10
     steps:
       - checkout
 
-      - add_ssh_keys:
-          fingerprints:
-            - "9f:b1:e5:7f:a9:d5:fe:72:60:33:7a:0e:4c:14:23:87"
+      - run:
+          name: Install Ansible and dependencies
+          command: |
+            python3 -m pip install --upgrade pip
+            pip install -r ./infrastructure/ansible/requirements.txt
+            ansible-galaxy install -r ./infrastructure/ansible/requirements.yml
+        
+      - aws-cli/setup:
+          profile: root
+          region: eu-central-1
+          aws-access-key-id: $AWS_ACCESS_KEY_ID
+          aws-secret-access-key: $AWS_SECRET_ACCESS_KEY
 
       - run:
-          name: SSH into remote server and deploy to server
+          name: Run Ansible playbook
           command: |
-            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
-              echo $GITHUB_TOKEN | sudo docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
+            ansible-playbook -i ./infrastructure/ansible/inventories/production.aws_ec2.yml \
+            ./infrastructure/ansible/playbooks/playbook.yml
 
-              sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
-              sudo docker stop drawing_recognition_ai || true
-              sudo docker rm drawing_recognition_ai || true
-              sudo docker run -d --name drawing_recognition_ai -p 8000:8000 ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
-              sudo rm -rf /var/www/html/frontend/*
-              sudo docker cp drawing_recognition_ai:/app/frontend/dist/. /var/www/html/frontend/    
-            EOF
+
+        
+
+  # deploy:
+  #   docker:
+  #     - image: cimg/base:stable
+  #   steps:
+  #     - checkout
+
+  #     - add_ssh_keys:
+  #         fingerprints:
+  #           - "9f:b1:e5:7f:a9:d5:fe:72:60:33:7a:0e:4c:14:23:87"
+
+  #     - run:
+  #         name: SSH into remote server and deploy to server
+  #         command: |
+  #           ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
+  #             echo $GITHUB_TOKEN | sudo docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
+
+  #             sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
+  #             sudo docker stop drawing_recognition_ai || true
+  #             sudo docker rm drawing_recognition_ai || true
+  #             sudo docker run -d --name drawing_recognition_ai -p 8000:8000 ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
+  #             sudo rm -rf /var/www/html/frontend/*
+  #             sudo docker cp drawing_recognition_ai:/app/frontend/dist/. /var/www/html/frontend/
+  #           EOF
+ 
+  
