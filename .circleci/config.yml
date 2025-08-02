@@ -73,10 +73,7 @@ jobs:
           name: Run Ansible playbook
           command: |
             ansible-playbook -i ./infrastructure/ansible/inventories/production.aws_ec2.yml \
-            ./infrastructure/ansible/playbooks/playbook.yml
-
-
-        
+            ./infrastructure/ansible/playbooks/playbook.yml        
 
   # deploy:
   #   docker:
