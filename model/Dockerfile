@@ -13,13 +13,15 @@ WORKDIR /app
 COPY --from=builder /app/out/full/model/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+EXPOSE 8000
+RUN apk add --no-cache curl
+
 COPY --from=builder /app/out/full/ .  
 COPY turbo.json turbo.json
 
 COPY frontend/dist/ ./frontend/dist/
 
 WORKDIR /app/model
-EXPOSE 8000
 
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
