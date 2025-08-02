@@ -66,8 +66,9 @@ jobs:
             ansible-galaxy install -r ./infrastructure/ansible/requirements.yml
 
       - aws-cli/setup:
+          aws-access-key-id: $aws_access_key_id
+          aws-secret-access-key: $aws_secret_access_key
           region: eu-central-1
-
       - run:
           name: Run Ansible playbook
           command: |
