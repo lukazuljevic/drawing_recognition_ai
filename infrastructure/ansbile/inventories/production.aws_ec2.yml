@@ -1,0 +1,17 @@
+plugin: aws_ec2
+profile: root
+
+regions:
+  - eu-central-1
+
+hostnames:
+  - ip-address
+
+filters:
+  tag:Name: drawing_recognition_ai
+
+# referenciras se na "web" u ovom slucaju kad budes koristio sa playbook-om
+keyed_groups:
+  - key: tags.Role
+
+leading_separator: false # makne _ ispred web 

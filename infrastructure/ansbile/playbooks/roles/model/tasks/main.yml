@@ -1,0 +1,41 @@
+---
+- name: Generate random suffix to container
+  set_fact:
+    new_container_name: "model-{{ lookup('password', '/dev/null length=12 chars=ascii_lowercase,digits') }}"
+
+- name: Create new model container
+  docker_container:
+    name: '{{new_container_name}}'
+    image: '{{docker_image}}' 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      retries: 5
+      interval: 15s
+    restart_policy: "unless-stopped"
+    output_logs: true
+    debug: true
+    # cpus: 0.5
+    # memory: 512m
+
+- name: Swap containers
+  block:
+    - name: Stop old model container
+      docker_container:
+        name: drawing_recognition_model
+        state: absent
+
+    - name: Rename new container to old name
+      command: docker rename {{ new_container_name }} drawing_recognition_model
+      become: true
+
+    - name: Cleanup old docker images
+      command: docker image prune -a -f
+
+  rescue:
+    - name: Remove unhealthy new container
+      docker_container:
+        name: '{{ new_container_name }}'
+        state: absent
+    - name: Return error
+      fail:
+        msg: "Failed to swap containers. The new container is unhealthy or the swap operation failed."
