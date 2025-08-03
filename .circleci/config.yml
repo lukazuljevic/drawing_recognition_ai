@@ -71,6 +71,12 @@ jobs:
             aws configure set region eu-central-1 --profile root
 
       - run:
+          name: Unset AWS environment variables to prevent conflict
+          command: |
+            unset AWS_ACCESS_KEY_ID
+            unset AWS_SECRET_ACCESS_KEY
+
+      - run:
           name: Run Ansible playbook
           command: |
             ansible-playbook -i ./infrastructure/ansible/inventories/production.aws_ec2.yml \
