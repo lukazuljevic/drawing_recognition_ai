@@ -66,8 +66,9 @@ jobs:
           name: Install and configure AWS CLI
           command: |
             pip install awscli
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile root
+            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile root
+            aws configure set region eu-central-1 --profile root
 
       - run:
           name: Run Ansible playbook
