@@ -6,7 +6,7 @@
 - name: Create new model container
   docker_container:
     name: '{{new_container_name}}'
-    image: '{{docker_image}}' 
+    image: '{{docker_image}}'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
       retries: 5
