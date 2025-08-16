@@ -1,0 +1,92 @@
+.authContainer {
+  background-color: rgb(255, 235, 59);
+  color: black;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+  font-family: "Courier New", Courier, monospace;
+  gap: 1.5rem;
+}
+
+.authContainer h1 {
+  font-size: 3rem;
+  font-style: italic;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.authContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+}
+
+.authContainer label {
+  font-size: 1rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.authContainer input {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 2px solid black;
+  border-radius: 5px;
+  outline: none;
+  font-family: "Courier New", Courier, monospace;
+  width: 100%;
+}
+
+.authContainer input:focus {
+  border-color: black;
+}
+
+.authContainer button {
+  background-color: black;
+  border: 0 solid rgb(255, 235, 59);
+  color: rgb(255, 235, 59);
+  font-family: ui-sans-serif, system-ui, -apple-system, system-ui, "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, "Noto Sans";
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.75rem 1.65rem;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+  cursor: pointer;
+  transform: rotate(-2deg);
+  position: relative;
+  user-select: none;
+  touch-action: manipulation;
+  margin-top: 1rem;
+}
+
+.authContainer button:focus {
+  outline: 0;
+}
+
+.authContainer button:after {
+  content: "";
+  position: absolute;
+  border: 1px solid black;
+  bottom: 4px;
+  left: 4px;
+  width: calc(100% - 1px);
+  height: calc(100% - 1px);
+}
+
+.authContainer button:hover:after {
+  bottom: 2px;
+  left: 2px;
+}
+
+.authContainer p {
+  text-align: center;
+  font-size: 0.9rem;
+}

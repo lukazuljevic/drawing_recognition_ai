@@ -6,6 +6,8 @@ import { useGetPrediction } from "../../api/drawing/useGetPrediction";
 import { Guesser } from "../../components/Guesser";
 import { LabelContext } from "../../contexts/LabelContext";
 import { FinalResult } from "../../components/FinalResult";
+import { ROUTES } from "../../constants/routes";
+import { useNavigate } from "react-router-dom";
 
 export const DrawingPage = () => {
   const [previousLabel, setPreviousLabel] = useState<string>("");
@@ -20,6 +22,13 @@ export const DrawingPage = () => {
 
   const { mutate: getPrediction } = useGetPrediction();
   const { label } = useContext(LabelContext);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) navigate(ROUTES.LOGIN);
+  }, []);
 
   useEffect(() => {
     intervalRef.current = setInterval(() => {

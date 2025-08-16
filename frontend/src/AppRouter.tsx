@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { Homepage } from "./pages/Homepage";
 import { DrawingPage } from "./pages/DrawingPage";
+import { AuthPage } from "./pages/AuthPage";
 import { ROUTES } from "./constants/routes";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -30,6 +31,11 @@ export const AppRouter = () => {
       <Routes>
         <Route path={ROUTES.HOMEPAGE} element={<Homepage />} />
         <Route path={ROUTES.DRAWING} element={<DrawingPage />} />
+        <Route path={ROUTES.LOGIN} element={<AuthPage pageType="login" />} />
+        <Route
+          path={ROUTES.REGISTER}
+          element={<AuthPage pageType="register" />}
+        />
         <Route path={ROUTES.NOT_FOUND} element={<h1>Page not found</h1>} />
       </Routes>
     </Router>
