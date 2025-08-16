@@ -9,7 +9,7 @@ type RegisterDto = {
 };
 
 type RegisterResponseDto = {
-  accessToken: string;
+  access_token: string;
 };
 
 const registerUser = async ({ username, password }: RegisterDto) => {
@@ -22,7 +22,8 @@ const registerUser = async ({ username, password }: RegisterDto) => {
 export const useUserRegister = (navigate: () => void) => {
   return useMutation(["register"], registerUser, {
     onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.accessToken);
+      console.log("Registration successful:", data);
+      localStorage.setItem("accessToken", data.access_token);
       navigate();
     },
     onError: (error: string) => {

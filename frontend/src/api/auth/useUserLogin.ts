@@ -9,7 +9,7 @@ type LoginDto = {
 };
 
 type JwtResponseDto = {
-  accessToken: string;
+  access_token: string;
 };
 
 const loginUser = async ({ username, password }: LoginDto) => {
@@ -22,7 +22,7 @@ const loginUser = async ({ username, password }: LoginDto) => {
 export const useUserLogin = (navigate: () => void) => {
   return useMutation(["login"], loginUser, {
     onSuccess: (data) => {
-      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("accessToken", data.access_token);
       navigate();
     },
     onError: (error: string) => {

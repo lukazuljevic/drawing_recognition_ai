@@ -1,5 +1,5 @@
 import { Canvas } from "../../components/Canvas";
-import { useEffect, useState, useRef, use, useContext } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import c from "./DrawingPage.module.css";
 import { CountDownTimer } from "../../components/Countdown";
 import { useGetPrediction } from "../../api/drawing/useGetPrediction";
@@ -13,16 +13,14 @@ export const DrawingPage = () => {
   const [previousLabel, setPreviousLabel] = useState<string>("");
   const [imageBase64, setImageBase64] = useState<string>("");
   const [isTimeFinished, setIsTimeFinished] = useState<boolean>(false);
-  const [isPredicting, setIsPredicting] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [predictionConfidance, setPredictionConfidance] = useState<number>(0);
 
   const countdownStartTimeRef = useRef(Date.now() + 20000);
-  const intervalRef = useRef<number>(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const { mutate: getPrediction } = useGetPrediction();
   const { label } = useContext(LabelContext);
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,46 +29,37 @@ export const DrawingPage = () => {
   }, []);
 
   useEffect(() => {
+    if (!imageBase64) return;
+
     intervalRef.current = setInterval(() => {
-      setIsPredicting(true);
+      if (!isTimeFinished) {
+        getPrediction(
+          { imageBase64, previousLabel },
+          {
+            onSuccess: (data) => {
+              setPreviousLabel(data.prediction);
+              setPredictionConfidance(data.confidence);
+              checkIfCorrectPrediction(data.prediction);
+            },
+            onError: (error) => {
+              console.error(error);
+            },
+          }
+        );
+      }
     }, 4000);
 
-    return () => clearInterval(intervalRef.current);
-  }, []);
-
-  useEffect(() => {
-    callGetPrediction();
-  }, [isPredicting]);
-
-  const callGetPrediction = () => {
-    if (imageBase64) {
-      getPrediction(
-        {
-          imageBase64: imageBase64,
-          previousLabel,
-        },
-        {
-          onSuccess: (data) => {
-            setPreviousLabel(data.prediction);
-            setPredictionConfidance(data.confidence);
-            setIsPredicting(false);
-
-            checkIfCorrectPrediction(data.prediction);
-          },
-          onError: (error) => {
-            console.error(error);
-          },
-        }
-      );
-    }
-  };
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [imageBase64, previousLabel, isTimeFinished]);
 
   const checkIfCorrectPrediction = (prediction: string) => {
     if (prediction === label) {
       const timeoutId = setTimeout(() => {
         setIsCorrect(true);
         setIsTimeFinished(true);
-        clearInterval(intervalRef.current);
+        if (intervalRef.current) clearInterval(intervalRef.current);
       }, 1000);
 
       return () => clearTimeout(timeoutId);

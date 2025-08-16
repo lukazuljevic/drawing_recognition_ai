@@ -16,9 +16,16 @@ const getPrediction = async ({
   imageBase64,
   previousLabel,
 }: GetPredictionParams) => {
+  const jwt = localStorage.getItem("accessToken");
+
   const response = await api.post<GetPredictionParams, GetPredictionResponse>(
     PREDICTION_PATH,
-    { imageBase64, previousLabel }
+    { imageBase64, previousLabel },
+    {
+      headers: {
+        Authorization: `Bearer ${jwt}`,
+      },
+    }
   );
   return response;
 };
