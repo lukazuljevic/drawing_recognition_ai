@@ -11,7 +11,7 @@ This project combines a **React + TypeScript** frontend with a **TensorFlow + Ke
 - 🧠Drawing recognition with a custom-trained model (25 drawing categories)
 - 🖍️ Interactive canvas-based drawing UI (React + TypeScript)
 - 📦Containerized with Docker
-- ☁️ Deployed on AWS EC2
+- ☁️ Deployed on AWS with EC2
 - 🔁CI/CD with CircleCI
 - 🔁Used Ansible to automate instance configuration
 
