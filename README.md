@@ -4,7 +4,7 @@ A machine learning web application. Users can draw directly in the browser, and 
 
 ## Overview
 
-This project combines a **React + TypeScript** frontend with a **TensorFlow + Keras** AI model trained on the **Quick Draw dataset**. It demonstrates real-time AI inference, containerization, and continuous deployment.
+This project combines a **React + TypeScript** frontend with a **TensorFlow + Keras** AI model trained on the **Quick Draw dataset**.It demonstrates real-time AI inference, containerization, and continuous deployment.
 
 ### ✨ Features 
 
