@@ -1,6 +1,6 @@
 # Drawing Recognition AI
 
-A  machine learning web application. Users can draw directly in the browser, and the system attempts to recognize the drawing in real-time using a trained neural network.
+A machine learning web application. Users can draw directly in the browser, and the system attempts to recognize the drawing in real-time using a trained neural network.
 
 ## Overview
 
