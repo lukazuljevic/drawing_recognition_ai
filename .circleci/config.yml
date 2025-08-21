@@ -51,6 +51,8 @@ jobs:
     docker:
       - image: cimg/python:3.10
     working_directory: ~/drawing_recognition_ai
+    environment:
+      ANSIBLE_CONFIG: /home/circleci/project/infrastructure/ansbile/ansbile.cfg
 
     steps:
       - checkout
@@ -61,10 +63,6 @@ jobs:
             python3 -m pip install --upgrade pip
             pip install -r ./infrastructure/ansible/requirements.txt
             ansible-galaxy install -r ./infrastructure/ansible/requirements.yml
-
-      - run:
-          name: Set Ansible config file
-          command: export ANSIBLE_CONFIG=./infrastructure/ansible/ansible.cfg
 
       - run:
           name: Debug
