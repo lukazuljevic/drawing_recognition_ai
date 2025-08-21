@@ -7,13 +7,19 @@ workflows:
           filters:
             branches:
               only: deployment
-
-      - ansible_playbook:
+      - deploy:
           requires:
             - build_docker_images
           filters:
             branches:
               only: deployment
+
+      # - ansible_playbook:
+      #     requires:
+      #       - build_docker_images
+      #     filters:
+      #       branches:
+      #         only: deployment
 
 jobs:
   build_docker_images:
