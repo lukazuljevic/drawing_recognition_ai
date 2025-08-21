@@ -66,6 +66,9 @@ jobs:
           name: Set Ansible config file
           command: export ANSIBLE_CONFIG=./infrastructure/ansible/ansible.cfg
 
+      - run:
+          name: Debug
+          command: ansible --verison
 
       - run:
           name: Install and configure AWS CLI
