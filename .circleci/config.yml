@@ -47,61 +47,61 @@ jobs:
             docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:${CIRCLE_SHA1}
             docker push ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
 
-  ansible_playbook:
-    docker:
-      - image: cimg/python:3.10
-    working_directory: ~/drawing_recognition_ai
-    environment:
-      ANSIBLE_CONFIG: /home/circleci/project/infrastructure/ansbile/ansbile.cfg
-
-    steps:
-      - checkout
-
-      - run:
-          name: Install Ansible and dependencies
-          command: |
-            python3 -m pip install --upgrade pip
-            pip install -r ./infrastructure/ansible/requirements.txt
-            ansible-galaxy install -r ./infrastructure/ansible/requirements.yml
-
-      - run:
-          name: Debug
-          command: ansible --version
-
-      - run:
-          name: Install and configure AWS CLI
-          command: |
-            pip install awscli
-            aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile root
-            aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile root
-            aws configure set region eu-central-1 --profile root
-
-      - run:
-          name: Run Ansible playbook
-          command: |
-            ansible-playbook -i ./infrastructure/ansible/inventories/production.aws_ec2.yml \
-            ./infrastructure/ansible/playbooks/playbook.yml
-
-  # deploy:
+  # ansible_playbook:
   #   docker:
-  #     - image: cimg/base:stable
+  #     - image: cimg/python:3.10
+  #   working_directory: ~/drawing_recognition_ai
+  #   environment:
+  #     ANSIBLE_CONFIG: /home/circleci/project/infrastructure/ansbile/ansbile.cfg
+
   #   steps:
   #     - checkout
 
-  #     - add_ssh_keys:
-  #         fingerprints:
-  #           - "9f:b1:e5:7f:a9:d5:fe:72:60:33:7a:0e:4c:14:23:87"
+  #     - run:
+  #         name: Install Ansible and dependencies
+  #         command: |
+  #           python3 -m pip install --upgrade pip
+  #           pip install -r ./infrastructure/ansible/requirements.txt
+  #           ansible-galaxy install -r ./infrastructure/ansible/requirements.yml
 
   #     - run:
-  #         name: SSH into remote server and deploy to server
-  #         command: |
-  #           ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
-  #             echo $GITHUB_TOKEN | sudo docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
+  #         name: Debug
+  #         command: ansible --version
 
-  #             sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
-  #             sudo docker stop drawing_recognition_ai || true
-  #             sudo docker rm drawing_recognition_ai || true
-  #             sudo docker run -d --name drawing_recognition_ai -p 8000:8000 ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
-  #             sudo rm -rf /var/www/html/frontend/*
-  #             sudo docker cp drawing_recognition_ai:/app/frontend/dist/. /var/www/html/frontend/
-  #           EOF
+  #     - run:
+  #         name: Install and configure AWS CLI
+  #         command: |
+  #           pip install awscli
+  #           aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID --profile root
+  #           aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY --profile root
+  #           aws configure set region eu-central-1 --profile root
+
+  #     - run:
+  #         name: Run Ansible playbook
+  #         command: |
+  #           ansible-playbook -i ./infrastructure/ansible/inventories/production.aws_ec2.yml \
+  #           ./infrastructure/ansible/playbooks/playbook.yml
+
+  deploy:
+    docker:
+      - image: cimg/base:stable
+    steps:
+      - checkout
+
+      - add_ssh_keys:
+          fingerprints:
+            - "9f:b1:e5:7f:a9:d5:fe:72:60:33:7a:0e:4c:14:23:87"
+
+      - run:
+          name: SSH into remote server and deploy to server
+          command: |
+            ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST \<< EOF
+              echo $GITHUB_TOKEN | sudo docker login ghcr.io -u $CIRCLE_PROJECT_USERNAME --password-stdin
+
+              sudo docker pull ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
+              sudo docker stop drawing_recognition_ai || true
+              sudo docker rm drawing_recognition_ai || true
+              sudo docker run -d --name drawing_recognition_ai -p 8000:8000 ghcr.io/lukazuljevic/drawing_recognition_ai_model:deployment
+              sudo rm -rf /var/www/html/frontend/*
+              sudo docker cp drawing_recognition_ai:/app/frontend/dist/. /var/www/html/frontend/
+            EOF
