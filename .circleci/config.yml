@@ -68,7 +68,7 @@ jobs:
 
       - run:
           name: Debug
-          command: ansible --verison
+          command: ansible --version
 
       - run:
           name: Install and configure AWS CLI
