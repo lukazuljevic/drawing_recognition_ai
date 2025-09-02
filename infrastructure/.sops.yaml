@@ -1,0 +1,3 @@
+creation_rules:
+  - kms: arn:aws:kms:eu-central-1:657343904207:alias/root-sops-kms
+    aws_profile: luka-personal-root
