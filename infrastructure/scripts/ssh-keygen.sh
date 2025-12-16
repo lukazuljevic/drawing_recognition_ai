@@ -12,6 +12,7 @@ cd $(dirname ${0}) || exit 1
 
 mkdir -p ../ssh-keys && cd ../ssh-keys
 ssh-keygen -t ed25519 -N "" -C "vjezbanje-skriptiranja" -f $ENV
-sops -e -i "${ENV}"
+mv "${ENV}" "${ENV}.enc"
+sops -e -i "${ENV}.enc"
 
 
