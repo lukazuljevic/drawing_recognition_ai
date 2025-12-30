@@ -82,19 +82,6 @@ source venv/bin/activate
 yarn dev
 ```
 
-**Docker setup:**
-
-Run this command in the root of the project after you setup the database (you can use docker compose):
-
-```bash
-docker build -t draw-game -f model/Dockerfile .
-```
-
-```bash
-docker run -d -p 8000:8000 --restart unless-stopped --name draw-game draw-game
-```
-
-
 - **Frontend**: [http://localhost:5173](http://localhost:5173)
 - **Backend**: [http://localhost:8000](http://localhost:8000) (The frontend proxies API requests here)
 
