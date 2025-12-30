@@ -16,7 +16,7 @@ This project combines a **React + TypeScript** frontend with a **TensorFlow + Ke
 - 🔁Used Ansible to automate instance configuration
 - 🔧(Planned) Infrastructure-as-Code with Terraform
 
-Check out the live app here: http://3.72.87.37/
+Check out the live app here: https://draw.zulja.org
 
 ## 🛠️ Local Development Setup
 
